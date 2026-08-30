@@ -463,7 +463,8 @@ bestScoreEl.innerText = Math.floor(bestScore);
 displayRandomPhrase();
 prizeEmojiEl.style.display = 'none';
 messageTextEl.innerText = 'Toca o pulsa espacio para saltar\ny recoge las 💰';
-messageEl.style.color = '#FDF6E3';
+messageEl.style.color = '#386641';
+messageEl.style.textShadow = '0 0 6px rgba(255,255,255,0.95), 0 0 6px rgba(255,255,255,0.95)';
 messageEl.style.display = 'flex';
 lastFrameTime = 0;
 gameLoop();
@@ -561,6 +562,7 @@ showGameOver(true);
 function startParade() {
 isParadeActive = true;
 messageEl.style.color = '#FDF6E3';
+messageEl.style.textShadow = 'none';
 messageEl.style.display = 'flex';
 messageTextEl.innerText = "NelSystems agradece por jugar y esperamos lo hayas disfrutado!"
 paradePositions = paradeCharacters.map((_, i) => -200 * (i + 1));
@@ -603,6 +605,7 @@ messageEl.style.color = '#FDF6E3';
 } else {
 messageEl.style.color = '#4A4A4A';
 }
+messageEl.style.textShadow = 'none';
 messageEl.style.display = 'flex';
 setTimeout(() => {
 hideMessage();
