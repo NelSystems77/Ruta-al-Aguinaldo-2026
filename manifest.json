@@ -1,0 +1,21 @@
+{
+  "name": "NelSystems · Ruta al Aguinaldo 2026",
+  "short_name": "Aguinaldo 2026",
+  "description": "Cuenta regresiva al aguinaldo 2026, minijuego para juntar tu aguinaldo, ideas para invertirlo y calculadora.",
+  "lang": "es",
+  "dir": "ltr",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#FDF6E3",
+  "theme_color": "#386641",
+  "icons": [
+    {
+      "src": "icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
