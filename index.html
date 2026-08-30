@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://placehold.co; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com; frame-ancestors 'none';">
 <meta http-equiv="X-Frame-Options" content="DENY">
-<title>¡NelSystems ruta al aguinaldo 2025!</title>
+<title>¡NelSystems ruta al aguinaldo 2026!</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -88,7 +88,7 @@ transition: transform 0.5s linear;
 
 <main class="w-full max-w-2xl mx-auto text-center">
 <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-🎶🎤 yaca yaca yo yaca yo yaca yo a ver canten conmigo 🎶🎶
+El aguinaldo llegará en...
 </h1>
 
 <div id="countdown" class="flex justify-center items-center space-x-2 sm:space-x-4 mb-8">
@@ -109,17 +109,33 @@ transition: transform 0.5s linear;
 <span class="countdown-label">Segundos</span>
 </div>
 </div>
+<div id="savingsBar" class="w-full max-w-xl mx-auto mb-3">
+<div class="flex justify-between text-xs font-semibold uppercase mb-1" style="color:#A68A64;">
+<span>Tu aguinaldo</span>
+<span id="savingsAmount">₡0</span>
+</div>
+<div class="w-full h-3 rounded-full overflow-hidden" style="background-color:#EAE0C8;">
+<div id="savingsFill" class="h-full transition-all duration-300" style="width:0%; background-color:#386641;"></div>
+</div>
+</div>
 <div class="w-full max-w-xl mx-auto relative z-10" style="height: 350px;">
 <canvas id="gameCanvas" class="w-full h-full"></canvas>
 <div id="message" class="absolute inset-0 flex flex-col items-center justify-center text-2xl font-bold bg-black bg-opacity-50 rounded-xl" style="display: none;">
 <span id="prizeEmoji" class="prize-emoji" style="display:none;"></span>
 <span id="messageText"></span>
 </div>
+<div id="gameOverPanel" class="absolute inset-0 flex-col items-center justify-center rounded-xl p-4 text-center cursor-pointer" style="display:none; background-color:rgba(0,0,0,0.65);">
+<p id="goTitle" class="text-xl font-bold text-white mb-1"></p>
+<p id="goSavings" class="text-2xl font-bold mb-2" style="color:#FFD700;"></p>
+<p id="goIdea" class="text-sm mb-4 leading-snug" style="color:rgba(255,255,255,0.9);"></p>
+<button id="goRestart" class="px-4 py-2 rounded-lg text-white font-semibold text-sm" style="background-color:#386641;">Jugar de nuevo</button>
+</div>
 </div>
 <p id="startPhrase" class="mt-4 text-sm text-gray-500"></p>
+<p class="mt-1 text-xs text-gray-400">Mejor puntaje: <span id="bestScore">0</span></p>
 
 <section class="mt-12 p-6 bg-yellow-50 rounded-lg shadow-inner">
-<h2 class="text-2xl font-bold text-gray-800 mb-4">✨ NelSystems te da algunas ideas para invertir tu Aguinaldo ✨</h2>
+<h2 class="text-2xl font-bold text-gray-800 mb-4">✨ NelSystems te da algunas ideas para invertir tu Aguinaldo 2026 ✨</h2>
 
 <div class="flex justify-center">
 <img src="https://placehold.co/192x192/4A4A4A/FDF6E3?text=NELSYSTEMS" alt="NELSYSTEMS" class="rounded-lg mx-auto mb-4 w-48 h-auto" />
@@ -134,10 +150,10 @@ transition: transform 0.5s linear;
     <p id="calcInstruction" class="text-gray-700 mb-4">
       Ingrese su devengado de Noviembre:
     </p>
-    <input type="number" id="calcInput" 
-           class="border rounded p-2 w-64 text-center mb-4" 
+    <input type="number" id="calcInput"
+           class="border rounded p-2 w-64 text-center mb-4"
            placeholder="Monto en colones">
-    <button onclick="guardarDato()" 
+    <button id="calcButton" onclick="guardarDato()"
             class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
       Siguiente
     </button>
@@ -147,7 +163,7 @@ transition: transform 0.5s linear;
 </main>
 
 <script>
-const targetDate = new Date('2025-11-27T19:00:00').getTime();
+const targetDate = new Date('2026-11-27T19:00:00').getTime();
 const daysEl = document.getElementById('days');
 const hoursEl = document.getElementById('hours');
 const minutesEl = document.getElementById('minutes');
@@ -182,11 +198,16 @@ const parent = canvas.parentElement;
 
 const groundHeight = 20;
 const prizeEmojis = ['💰', '💰💰', '💰💰💰','💰💰💰💰','💰💰💰💰💰'];
+const COIN_VALUE = 5000;        // ₡ por moneda recogida
+const SAVINGS_GOAL = 500000;    // meta de la barra "Tu aguinaldo"
 let playerSize, gameLoopId, paradeLoopId;
-let player, obstacles;
-let gameSpeed, score, gameOver, gameStarted, lastObstacleTime;
+let player, obstacles, coins;
+let gameSpeed, score, gameOver, gameStarted, lastObstacleTime, lastCoinTime;
+let coinsCollected, savings;
 let isParadeActive = false;
-let lastFrameTime = performance.now();
+let lastFrameTime = 0;
+let bestScore = 0;
+try { bestScore = parseInt(localStorage.getItem('aguinaldo_best'), 10) || 0; } catch (e) {}
 const themes = [
 { player: '🐒', obstacle: '🌳', bg: '#FEFBF3' },
 { player: '☃️', obstacle: '❄️', bg: '#FEFBF3' },
@@ -351,19 +372,100 @@ function hideMessage() {
 messageEl.style.display = 'none';
 }
 
+const savingsAmountEl = document.getElementById('savingsAmount');
+const savingsFillEl = document.getElementById('savingsFill');
+const bestScoreEl = document.getElementById('bestScore');
+const gameOverPanel = document.getElementById('gameOverPanel');
+const goTitleEl = document.getElementById('goTitle');
+const goSavingsEl = document.getElementById('goSavings');
+const goIdeaEl = document.getElementById('goIdea');
+
+function formatColones(n) {
+return '₡' + Math.round(n).toLocaleString('es-CR');
+}
+
+function updateSavingsUI() {
+savingsAmountEl.innerText = formatColones(savings);
+savingsFillEl.style.width = Math.min(100, (savings / SAVINGS_GOAL) * 100) + '%';
+}
+
+function recommendIdea(amount) {
+let pool;
+if (amount < 60000) {
+pool = ideas.filter(i => i.startsWith('🛡️'));
+} else if (amount < 150000) {
+pool = ideas.filter(i => i.startsWith('🏠') || i.startsWith('📚') || i.startsWith('💻'));
+} else {
+pool = ideas.filter(i => i.startsWith('📈'));
+}
+if (!pool || pool.length === 0) pool = ideas;
+return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function showGameOver(won) {
+gameOver = true;
+if (score > bestScore) {
+bestScore = Math.floor(score);
+try { localStorage.setItem('aguinaldo_best', String(bestScore)); } catch (e) {}
+}
+bestScoreEl.innerText = Math.floor(bestScore);
+goTitleEl.innerText = won ? '¡Llegaste a la meta! 🎉' : '¡Perdiste! Pero algo lograste ahorrar…';
+goSavingsEl.innerText = 'Ahorraste ' + formatColones(savings);
+goIdeaEl.innerText = savings > 0
+? 'Idea para invertirlo: ' + recommendIdea(savings)
+: 'Recoge 💰 en tu próximo intento para juntar tu aguinaldo.';
+gameOverPanel.style.display = 'flex';
+}
+
+function drawCoins() {
+coins.forEach(coin => {
+ctx.font = `${coin.size}px sans-serif`;
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+ctx.fillText('💰', coin.x, coin.y);
+});
+}
+
+function spawnCoins() {
+const ground = canvas.height - groundHeight;
+const size = playerSize * 0.7;
+const count = 1 + Math.floor(Math.random() * 3);
+const lowest = ground - player.height * 0.8;
+const highest = ground - player.height * 2.5;
+const baseY = lowest + Math.random() * (highest - lowest);
+for (let i = 0; i < count; i++) {
+coins.push({
+x: canvas.width + i * size * 1.6,
+y: baseY - Math.sin((i / Math.max(1, count - 1)) * Math.PI) * size * 1.2,
+size: size,
+collected: false
+});
+}
+}
+
 function resetGame() {
 cancelAnimationFrame(gameLoopId);
 obstacles = [];
-gameSpeed = 2;
+coins = [];
+gameSpeed = 4;
 score = 0;
+coinsCollected = 0;
+savings = 0;
 gameOver = false;
 gameStarted = false;
 lastObstacleTime = 0;
+lastCoinTime = 0;
 currentThemeIndex = 0;
 currentLevel = 0;
-hideMessage();
+gameOverPanel.style.display = 'none';
+updateSavingsUI();
+bestScoreEl.innerText = Math.floor(bestScore);
 displayRandomPhrase();
-lastFrameTime = performance.now();
+prizeEmojiEl.style.display = 'none';
+messageTextEl.innerText = 'Toca o pulsa espacio para saltar\ny recoge las 💰';
+messageEl.style.color = '#FDF6E3';
+messageEl.style.display = 'flex';
+lastFrameTime = 0;
 gameLoop();
 }
 
@@ -378,23 +480,34 @@ player.isJumping = true;
 }
 }
 
-canvas.addEventListener('click', (e) => {
-e.preventDefault();
-if (gameOver && !isParadeActive) {
+function primaryAction() {
+if (isParadeActive) return;
+if (gameOver) {
 resetGame();
 } else {
 handleJump();
 }
+}
+
+canvas.addEventListener('click', (e) => {
+e.preventDefault();
+primaryAction();
+});
+
+canvas.addEventListener('touchstart', (e) => {
+e.preventDefault();
+primaryAction();
+}, { passive: false });
+
+gameOverPanel.addEventListener('click', (e) => {
+e.preventDefault();
+if (!isParadeActive) resetGame();
 });
 
 document.body.addEventListener('keydown', (e) => {
-if (e.code === 'Space') {
+if (e.code === 'Space' || e.code === 'ArrowUp') {
 e.preventDefault();
-if (gameOver && !isParadeActive) {
-resetGame();
-} else {
-handleJump();
-}
+primaryAction();
 }
 });
 
@@ -439,7 +552,10 @@ paradeLoopId = requestAnimationFrame(paradeLoop);
 function endParade() {
 isParadeActive = false;
 cancelAnimationFrame(paradeLoopId);
-resetGame();
+hideMessage();
+savings += 100000; // bono por completar el recorrido
+updateSavingsUI();
+showGameOver(true);
 }
 
 function startParade() {
@@ -496,16 +612,21 @@ hideMessage();
 // Fix 2: Use delta time to normalize game speed
 function gameLoop(currentTime) {
 gameLoopId = requestAnimationFrame(gameLoop);
-const deltaTime = currentTime - lastFrameTime;
-lastFrameTime = currentTime;
+const now = currentTime || performance.now();
+if (!lastFrameTime) lastFrameTime = now;
+let deltaTime = now - lastFrameTime;
+lastFrameTime = now;
+if (!deltaTime || deltaTime < 0) deltaTime = 16.67;
+if (deltaTime > 50) deltaTime = 50; // clamp al volver de otra pestaña
+const dt = deltaTime / 16.67; // factor de frame (1 = 60fps)
 if (gameOver || isParadeActive) {
 return;
 }
 ctx.clearRect(0, 0, canvas.width, canvas.height);
 drawGround();
 if (gameStarted) {
-player.velocityY += player.gravity;
-player.y += player.velocityY;
+player.velocityY += player.gravity * dt;
+player.y += player.velocityY * dt;
 if (player.y >= canvas.height - groundHeight - player.height / 2) {
 player.y = canvas.height - groundHeight - player.height / 2;
 player.velocityY = 0;
@@ -515,7 +636,6 @@ const newLevel = Math.floor(score / 500);
 if (newLevel > currentLevel) {
 currentLevel = newLevel;
 if (currentLevel >= 10) {
-gameOver = true;
 startParade();
 return;
 }
@@ -523,8 +643,11 @@ currentThemeIndex = Math.min(newLevel, themes.length - 1);
 const prizeIndex = currentLevel % prizeEmojis.length;
 displayLevelMessage(currentLevel + 1, prizeEmojis[prizeIndex]);
 }
-if (Date.now() - lastObstacleTime > 2000 * (1 - (gameSpeed - 2) / 10)) { // Adjust obstacle frequency with speed
-if (Math.random() < 0.35) {
+
+// Obstáculos: intervalo acotado para que nunca sea imposible
+const obstacleInterval = Math.max(750, 1900 - (gameSpeed - 4) * 130);
+if (Date.now() - lastObstacleTime > obstacleInterval) {
+if (Math.random() < 0.5) {
 const h = playerSize * 0.8;
 obstacles.push({
 x: canvas.width,
@@ -535,31 +658,71 @@ height: h
 lastObstacleTime = Date.now();
 }
 }
-obstacles.forEach((obstacle, i) => {
-obstacle.x -= gameSpeed * (deltaTime / 16.67); // Normalize speed
+
+// Monedas
+if (Date.now() - lastCoinTime > 1400) {
+if (Math.random() < 0.7) {
+spawnCoins();
+lastCoinTime = Date.now();
+}
+}
+
+const step = gameSpeed * dt;
+
+for (let i = obstacles.length - 1; i >= 0; i--) {
+const obstacle = obstacles[i];
+obstacle.x -= step;
 if (obstacle.x + obstacle.width / 2 < 0) {
 obstacles.splice(i, 1);
+continue;
 }
-if (rectsOverlap(player.x, player.y, player.width, player.height,
-obstacle.x, obstacle.y, obstacle.width, obstacle.height)) {
-gameOver = true;
-const message = `¡Perdiste! Inténtalo de nuevo.`;
-showMessage(message);
+// hitbox con perdón: 60% del tamaño visible
+if (rectsOverlap(player.x, player.y, player.width * 0.6, player.height * 0.6,
+obstacle.x, obstacle.y, obstacle.width * 0.6, obstacle.height * 0.6)) {
+showGameOver(false);
+return;
 }
-});
+}
+
+for (let i = coins.length - 1; i >= 0; i--) {
+const coin = coins[i];
+coin.x -= step;
+if (coin.x + coin.size / 2 < 0) {
+coins.splice(i, 1);
+continue;
+}
+if (rectsOverlap(player.x, player.y, player.width * 0.8, player.height * 0.8,
+coin.x, coin.y, coin.size * 0.9, coin.size * 0.9)) {
+coins.splice(i, 1);
+coinsCollected++;
+savings += COIN_VALUE;
+updateSavingsUI();
+continue;
+}
+}
+
 drawObstacles();
-score++;
-gameSpeed += 0.00075;
+drawCoins();
+score += dt;
+gameSpeed += 0.00075 * dt;
 ctx.fillStyle = (currentLevel >= 6) ? '#FDF6E3' : '#A68A64';
 ctx.font = '16px Poppins';
 ctx.textAlign = 'left';
-ctx.fillText(`Puntaje: ${score}`, 10, 20);
+ctx.textBaseline = 'alphabetic';
+ctx.fillText(`Puntaje: ${Math.floor(score)}`, 10, 20);
+ctx.textAlign = 'right';
+ctx.fillText(`💰 ${coinsCollected}`, canvas.width - 10, 20);
 }
 drawPlayer();
 }
 
+let resizeTimer;
 window.addEventListener('resize', () => {
-  resetGame();
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    resizeCanvasAndEntities();
+    resetGame();
+  }, 200);
 });
 
 function init() {
@@ -593,7 +756,7 @@ const ideas = [
 "📚 Educación y desarrollo personal: Compra libros o audiolibros que te aporten valor.",
 "📚 Educación y desarrollo personal: Haz una certificación profesional que mejore tu carrera.",
 "📚 Educación y desarrollo personal: Paga un taller práctico (cocina, fotografía, programación, etc.).",
-"📚 Educación y desarrollo personal: Separa un monto para eventos o congresos en 2025.",
+"📚 Educación y desarrollo personal: Separa un monto para eventos o congresos en 2026.",
 "💻 Tecnología y productividad: Actualiza tu computadora o celular si ya está muy obsoleto.",
 "💻 Tecnología y productividad: Compra software o suscripciones que te ayuden en tu trabajo o estudios.",
 "💻 Tecnología y productividad: Instala internet de mejor calidad si lo necesitas para teletrabajo/estudio.",
@@ -611,6 +774,8 @@ ideasContainer.style.display = 'block';
 const randomIndex = Math.floor(Math.random() * ideas.length);
 ideasContent.innerText = ideas[randomIndex];
 }
+
+// --- Calculadora de Aguinaldo ---
 const mesesCalc = [
   "Noviembre", "Diciembre", "Enero", "Febrero", "Marzo", "Abril",
   "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Salario Escolar"
@@ -644,10 +809,11 @@ function calcularAguinaldo() {
   const aguinaldo = suma / 12;
   document.getElementById("calcInstruction").innerText = "";
   document.getElementById("calcInput").style.display = "none";
-  document.querySelector("button").style.display = "none";
+  document.getElementById("calcButton").style.display = "none";
   document.getElementById("calcResult").innerText =
     "🎉 Felicidades recibirás un Aguinaldo de: " + aguinaldo.toFixed(2) + " colones";
 }
 </script>
 </body>
 </html>
+
