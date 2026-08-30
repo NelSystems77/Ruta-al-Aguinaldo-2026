@@ -4,6 +4,7 @@
   "description": "Cuenta regresiva al aguinaldo 2026, minijuego para juntar tu aguinaldo, ideas para invertirlo y calculadora.",
   "lang": "es",
   "dir": "ltr",
+  "id": "/Ruta-al-Aguinaldo-2026/",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",
