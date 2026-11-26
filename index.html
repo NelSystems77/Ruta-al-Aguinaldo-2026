@@ -3,8 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https://placehold.co; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://generativelanguage.googleapis.com; frame-ancestors 'none';">
-<meta http-equiv="X-Frame-Options" content="DENY">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https://placehold.co; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self';">
 <title>¡NelSystems ruta al aguinaldo 2026!</title>
 <link rel="icon" type="image/png" sizes="72x72" href="icon-72.png">
 <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
@@ -12,14 +11,14 @@
 <link rel="apple-touch-icon" href="icon-512.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#386641">
-<meta name="description" content="Cuenta regresiva al aguinaldo 2026 (pago estimado 27/11/2026), minijuego para juntar tu aguinaldo, ideas para invertirlo y calculadora.">
+<meta name="description" content="Cuenta regresiva al aguinaldo 2026 (pago estimado 26/11/2026), minijuego para juntar tu aguinaldo, ideas para invertirlo y calculadora.">
 <link rel="canonical" href="https://nelsystems77.github.io/Ruta-al-Aguinaldo-2026/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="NelSystems">
 <meta property="og:locale" content="es_CR">
 <meta property="og:url" content="https://nelsystems77.github.io/Ruta-al-Aguinaldo-2026/">
 <meta property="og:title" content="NelSystems · Ruta al Aguinaldo 2026">
-<meta property="og:description" content="Cuenta regresiva al aguinaldo 2026 (pago estimado 27/11/2026), minijuego para juntar tu aguinaldo, ideas para invertirlo y calculadora.">
+<meta property="og:description" content="Cuenta regresiva al aguinaldo 2026 (pago estimado 26/11/2026), minijuego para juntar tu aguinaldo, ideas para invertirlo y calculadora.">
 <meta property="og:image" content="https://nelsystems77.github.io/Ruta-al-Aguinaldo-2026/icon-512.png">
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
@@ -28,7 +27,7 @@
 <meta name="twitter:title" content="NelSystems · Ruta al Aguinaldo 2026">
 <meta name="twitter:description" content="Cuenta regresiva al aguinaldo 2026, minijuego, ideas para invertirlo y calculadora.">
 <meta name="twitter:image" content="https://nelsystems77.github.io/Ruta-al-Aguinaldo-2026/icon-512.png">
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="tailwind.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -42,7 +41,7 @@ color: #4A4A4A;
 background-color: #FEFBF3;
 border: 1px solid #EAE0C8;
 border-radius: 0.75rem;
-box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1-rgba(0, 0, 0, 0.03);
+box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
 display: flex;
 flex-direction: column;
 align-items: center;
@@ -160,7 +159,7 @@ El aguinaldo llegará en...
 <h2 class="text-2xl font-bold text-gray-800 mb-4">✨ NelSystems te da algunas ideas para invertir tu Aguinaldo 2026 ✨</h2>
 
 <div class="flex justify-center">
-<img src="https://placehold.co/192x192/4A4A4A/FDF6E3?text=NELSYSTEMS" alt="NELSYSTEMS" class="rounded-lg mx-auto mb-4 w-48 h-auto" />
+<img src="https://placehold.co/192x192/4A4A4A/FDF6E3?text=NELSYSTEMS" alt="NELSYSTEMS" width="192" height="192" loading="lazy" decoding="async" class="rounded-lg mx-auto mb-4 w-48 h-auto" />
 </div>
 <div id="ideasContainer" class="mt-6 text-left" style="display:none;">
 <p id="ideasContent" class="text-gray-700 leading-relaxed"></p>
@@ -185,7 +184,7 @@ El aguinaldo llegará en...
 </main>
 
 <script>
-const targetDate = new Date('2026-11-27T19:00:00').getTime();
+const targetDate = new Date('2026-11-26T19:30:00-06:00').getTime();
 const daysEl = document.getElementById('days');
 const hoursEl = document.getElementById('hours');
 const minutesEl = document.getElementById('minutes');
@@ -202,12 +201,12 @@ const days = Math.floor(distance / (1000 * 60 * 60 * 24));
 const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
 const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
 const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-daysEl.innerText = days;
-hoursEl.innerText = hours;
-minutesEl.innerText = minutes;
-secondsEl.innerText = seconds;
+daysEl.textContent = days;
+hoursEl.textContent = hours;
+minutesEl.textContent = minutes;
+secondsEl.textContent = seconds;
 };
-const countdownInterval = setInterval(updateCountdown, 1000);
+var countdownInterval = setInterval(updateCountdown, 1000);
 updateCountdown();
 // --- Game Logic ---
 const canvas = document.getElementById('gameCanvas');
@@ -227,6 +226,7 @@ let player, obstacles, coins;
 let gameSpeed, score, gameOver, gameStarted, lastObstacleTime, lastCoinTime;
 let coinsCollected, savings;
 let isParadeActive = false;
+let paradeTimeoutId;
 let lastFrameTime = 0;
 let bestScore = 0;
 try { bestScore = parseInt(localStorage.getItem('aguinaldo_best'), 10) || 0; } catch (e) {}
@@ -467,6 +467,9 @@ collected: false
 
 function resetGame() {
 cancelAnimationFrame(gameLoopId);
+cancelAnimationFrame(paradeLoopId);
+clearTimeout(paradeTimeoutId);
+isParadeActive = false;
 obstacles = [];
 coins = [];
 gameSpeed = 4;
@@ -590,9 +593,7 @@ messageTextEl.innerText = "NelSystems agradece por jugar y esperamos lo hayas di
 paradePositions = paradeCharacters.map((_, i) => -200 * (i + 1));
 paradeLoop();
 
-setTimeout(() => {
-endParade();
-}, 7000);
+paradeTimeoutId = setTimeout(endParade, 7000);
 }
 
 function drawObstacles() {
@@ -807,6 +808,8 @@ const mesesCalc = [
 ];
 let datosCalc = [];
 let indiceCalc = 0;
+
+document.getElementById('calcInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') guardarDato(); });
 
 function guardarDato() {
   const input = document.getElementById("calcInput");
