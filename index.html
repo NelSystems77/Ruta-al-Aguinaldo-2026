@@ -199,7 +199,7 @@ El aguinaldo llegará en...
 // 1) Antes del pago: cuenta regresiva + minijuego
 // 2) Desde el pago hasta REOPEN_GAME: video en bucle con "Sound On"
 // 3) Desde REOPEN_GAME: minijuego + cuenta regresiva al siguiente aguinaldo
-const PAY_DATE = new Date('2026-11-26T19:30:00-06:00').getTime();
+const PAY_DATE = new Date('2026-11-26T19:00:00-06:00').getTime();
 const REOPEN_GAME = new Date('2026-12-03T00:00:00-06:00').getTime();
 const NEXT_PAY_DATE = new Date('2027-12-26T19:00:00-06:00').getTime();
 const getPhase = (t) => t < PAY_DATE ? 'before' : (t < REOPEN_GAME ? 'video' : 'next');
