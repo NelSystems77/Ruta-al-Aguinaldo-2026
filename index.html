@@ -11,21 +11,21 @@
 <link rel="apple-touch-icon" href="icon-512.png">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#386641">
-<meta name="description" content="Cuenta regresiva al aguinaldo 2026 (pago estimado 26/11/2026), minijuego para juntar tu aguinaldo, ideas para invertirlo y calculadora.">
+<meta name="description" content="Cuenta regresiva al próximo aguinaldo, minijuego para juntar tu aguinaldo, ideas para invertirlo y calculadora.">
 <link rel="canonical" href="https://nelsystems77.github.io/Ruta-al-Aguinaldo-2026/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="NelSystems">
 <meta property="og:locale" content="es_CR">
 <meta property="og:url" content="https://nelsystems77.github.io/Ruta-al-Aguinaldo-2026/">
 <meta property="og:title" content="NelSystems · Ruta al Aguinaldo 2026">
-<meta property="og:description" content="Cuenta regresiva al aguinaldo 2026 (pago estimado 26/11/2026), minijuego para juntar tu aguinaldo, ideas para invertirlo y calculadora.">
+<meta property="og:description" content="Cuenta regresiva al próximo aguinaldo, minijuego para juntar tu aguinaldo, ideas para invertirlo y calculadora.">
 <meta property="og:image" content="https://nelsystems77.github.io/Ruta-al-Aguinaldo-2026/icon-512.png">
 <meta property="og:image:width" content="512">
 <meta property="og:image:height" content="512">
 <meta property="og:image:alt" content="Logo de NelSystems: un mono con anteojos escribiendo en un teclado">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NelSystems · Ruta al Aguinaldo 2026">
-<meta name="twitter:description" content="Cuenta regresiva al aguinaldo 2026, minijuego, ideas para invertirlo y calculadora.">
+<meta name="twitter:description" content="Cuenta regresiva al próximo aguinaldo, minijuego, ideas para invertirlo y calculadora.">
 <meta name="twitter:image" content="https://nelsystems77.github.io/Ruta-al-Aguinaldo-2026/icon-512.png">
 <link rel="stylesheet" href="tailwind.css">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -166,7 +166,7 @@ El aguinaldo llegará en...
 </div>
 
 <section class="mt-12 p-6 bg-yellow-50 rounded-lg shadow-inner">
-<h2 class="text-2xl font-bold text-gray-800 mb-4">✨ NelSystems te da algunas ideas para invertir tu Aguinaldo 2026 ✨</h2>
+<h2 id="ideasTitle" class="text-2xl font-bold text-gray-800 mb-4">✨ NelSystems te da algunas ideas para invertir tu Aguinaldo 2026 ✨</h2>
 
 <div class="flex justify-center">
 <img src="https://placehold.co/192x192/4A4A4A/FDF6E3?text=NELSYSTEMS" alt="NELSYSTEMS" width="192" height="192" loading="lazy" decoding="async" class="rounded-lg mx-auto mb-4 w-48 h-auto" />
@@ -205,6 +205,13 @@ const getPhase = (t) => t < PAY_DATE ? 'before' : (t < REOPEN_GAME ? 'video' : '
 const phase = getPhase(Date.now());
 const targetDate = phase === 'before' ? PAY_DATE : NEXT_PAY_DATE;
 const gameActive = phase !== 'video';
+// Año del aguinaldo vigente: 2026 hasta el pago; después, el del próximo ciclo
+const AG_YEAR = phase === 'next' ? new Date(NEXT_PAY_DATE).getUTCFullYear() : 2026;
+if (phase === 'next') {
+document.title = '¡NelSystems ruta al aguinaldo ' + AG_YEAR + '!';
+document.getElementById('mainTitle').textContent = 'El aguinaldo ' + AG_YEAR + ' llegará en...';
+document.getElementById('ideasTitle').textContent = '✨ NelSystems te da algunas ideas para invertir tu Aguinaldo ' + AG_YEAR + ' ✨';
+}
 const daysEl = document.getElementById('days');
 const hoursEl = document.getElementById('hours');
 const minutesEl = document.getElementById('minutes');
@@ -241,6 +248,7 @@ if (getPhase(now) !== phase) { location.reload(); return; }
 const distance = targetDate - now;
 if (distance < 0) {
 clearInterval(countdownInterval);
+titleEl.textContent = '¡Llegó el aguinaldo ' + AG_YEAR + '! 🎉';
 countdownEl.innerHTML = "<h2 class='text-2xl font-bold text-green-600'>¡Llegó el día disfruta tu merecido aguinaldo! 🎉</h2>";
 return;
 }
@@ -832,7 +840,7 @@ const ideas = [
 "📚 Educación y desarrollo personal: Compra libros o audiolibros que te aporten valor.",
 "📚 Educación y desarrollo personal: Haz una certificación profesional que mejore tu carrera.",
 "📚 Educación y desarrollo personal: Paga un taller práctico (cocina, fotografía, programación, etc.).",
-"📚 Educación y desarrollo personal: Separa un monto para eventos o congresos en 2026.",
+"📚 Educación y desarrollo personal: Separa un monto para eventos o congresos en " + AG_YEAR + ".",
 "💻 Tecnología y productividad: Actualiza tu computadora o celular si ya está muy obsoleto.",
 "💻 Tecnología y productividad: Compra software o suscripciones que te ayuden en tu trabajo o estudios.",
 "💻 Tecnología y productividad: Instala internet de mejor calidad si lo necesitas para teletrabajo/estudio.",
