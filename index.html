@@ -108,7 +108,7 @@ transition: transform 0.5s linear;
 <body class="flex items-center justify-center min-h-screen p-4">
 
 <main class="w-full max-w-2xl mx-auto text-center">
-<h1 class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+<h1 id="mainTitle" class="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-800 mb-6">
 El aguinaldo llegará en...
 </h1>
 
@@ -130,6 +130,15 @@ El aguinaldo llegará en...
 <span class="countdown-label">Segundos</span>
 </div>
 </div>
+<section id="videoSection" class="w-full max-w-xl mx-auto mb-8" style="display:none;">
+<div class="relative mx-auto rounded-xl overflow-hidden shadow-lg" style="max-width:420px; aspect-ratio:1/1; background:#000;">
+<video id="payVideo" src="aguinaldo.mp4" poster="poster.jpg" class="w-full h-full object-cover" loop muted playsinline preload="auto" autoplay></video>
+<button id="soundBtn" type="button" class="absolute inset-0 flex items-center justify-center w-full h-full" style="background:rgba(0,0,0,0.35); border:0; cursor:pointer;">
+<span class="px-5 py-3 rounded-full text-white font-bold text-lg" style="background-color:#386641;">🔊 Sound On</span>
+</button>
+</div>
+</section>
+<div id="gameSection">
 <div id="savingsBar" class="w-full max-w-xl mx-auto mb-3">
 <div class="flex justify-between text-xs font-semibold uppercase mb-1" style="color:#A68A64;">
 <span>Tu aguinaldo</span>
@@ -154,6 +163,7 @@ El aguinaldo llegará en...
 </div>
 <p id="startPhrase" class="mt-4 text-sm text-gray-500"></p>
 <p class="mt-1 text-xs text-gray-400">Mejor puntaje: <span id="bestScore">0</span></p>
+</div>
 
 <section class="mt-12 p-6 bg-yellow-50 rounded-lg shadow-inner">
 <h2 class="text-2xl font-bold text-gray-800 mb-4">✨ NelSystems te da algunas ideas para invertir tu Aguinaldo 2026 ✨</h2>
@@ -184,17 +194,54 @@ El aguinaldo llegará en...
 </main>
 
 <script>
-const targetDate = new Date('2026-11-26T19:30:00-06:00').getTime();
+// --- Fases (hora de Costa Rica, UTC-6) ---
+// 1) Antes del pago: cuenta regresiva + minijuego
+// 2) Desde el pago hasta REOPEN_GAME: video en bucle con "Sound On"
+// 3) Desde REOPEN_GAME: minijuego + cuenta regresiva al siguiente aguinaldo
+const PAY_DATE = new Date('2026-11-26T19:30:00-06:00').getTime();
+const REOPEN_GAME = new Date('2026-12-03T00:00:00-06:00').getTime();
+const NEXT_PAY_DATE = new Date('2027-12-26T19:00:00-06:00').getTime();
+const getPhase = (t) => t < PAY_DATE ? 'before' : (t < REOPEN_GAME ? 'video' : 'next');
+const phase = getPhase(Date.now());
+const targetDate = phase === 'before' ? PAY_DATE : NEXT_PAY_DATE;
+const gameActive = phase !== 'video';
 const daysEl = document.getElementById('days');
 const hoursEl = document.getElementById('hours');
 const minutesEl = document.getElementById('minutes');
 const secondsEl = document.getElementById('seconds');
+const titleEl = document.getElementById('mainTitle');
+const countdownEl = document.getElementById('countdown');
+const gameSection = document.getElementById('gameSection');
+const videoSection = document.getElementById('videoSection');
+
+function setupVideo() {
+titleEl.textContent = '¡Llegó el aguinaldo! 🎉';
+countdownEl.style.display = 'none';
+gameSection.style.display = 'none';
+videoSection.style.display = 'block';
+const video = document.getElementById('payVideo');
+const soundBtn = document.getElementById('soundBtn');
+const unmute = () => {
+video.muted = false;
+video.play().catch(() => {});
+soundBtn.style.display = 'none';
+};
+soundBtn.addEventListener('click', unmute);
+// Intenta con sonido; si el navegador lo bloquea, sigue silenciado hasta el toque
+video.muted = false;
+video.play().then(() => { soundBtn.style.display = 'none'; }).catch(() => {
+video.muted = true;
+video.play().catch(() => {});
+});
+}
+
 const updateCountdown = () => {
-const now = new Date().getTime();
+const now = Date.now();
+if (getPhase(now) !== phase) { location.reload(); return; }
 const distance = targetDate - now;
 if (distance < 0) {
 clearInterval(countdownInterval);
-document.getElementById('countdown').innerHTML = "<h2 class='text-2xl font-bold text-green-600'>¡Llegó el día disfruta tu merecido aguinaldo! 🎉</h2>"
+countdownEl.innerHTML = "<h2 class='text-2xl font-bold text-green-600'>¡Llegó el día disfruta tu merecido aguinaldo! 🎉</h2>";
 return;
 }
 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -207,7 +254,8 @@ minutesEl.textContent = minutes;
 secondsEl.textContent = seconds;
 };
 var countdownInterval = setInterval(updateCountdown, 1000);
-updateCountdown();
+if (gameActive) updateCountdown();
+else setupVideo();
 // --- Game Logic ---
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
@@ -507,7 +555,7 @@ player.isJumping = true;
 }
 
 function primaryAction() {
-if (isParadeActive) return;
+if (!gameActive || isParadeActive) return;
 if (gameOver) {
 resetGame();
 } else {
@@ -746,12 +794,14 @@ let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
+    if (!gameActive) return;
     resizeCanvasAndEntities();
     resetGame();
   }, 200);
 });
 
 function init() {
+    if (!gameActive) return;
     resizeCanvasAndEntities();
     resetGame();
     displayRandomIdea();
